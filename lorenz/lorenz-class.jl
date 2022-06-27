@@ -80,8 +80,36 @@ ax.xlabel="t"; ax.ylabel="euclidian distance"
 
 save("lorenz-attractor-twoics.png", fig, px_per_unit=3)
 
-## distance between trajectorties 
-# δx = Matrix(tr) .- Matrix(tr2)
+
+# Eigenvalues of C- and C+ 
+using LinearAlgebra
+# ρs = range(1,2, length=100)
+ρs = range(1,30, length=1000)
+all_λs = zeros(ComplexF64, (length(ρs), 3));
+for (idx, ρ) ∈ enumerate(ρs)
+    C₊ = [sqrt(β*(ρ-1)), sqrt(β*(ρ-1)), ρ-1]
+    C₋ = [-sqrt(β*(ρ-1)), -sqrt(β*(ρ-1)), ρ-1]
+    J = Matrix(lor.jacobian(C₊, [σ, ρ, β], 0))
+    λs = eigvals(J)
+    all_λs[idx,:] = λs
+end
+
+fig = Figure() 
+for i=1:3
+ax = Axis(fig[i, 1], ylabel="Re(λ_$(i))", xlabel="ρ")
+lines!(ax, ρs, real.(all_λs[:,i]))
+hlines!(ax, 0, color=:red, linestyle="--")
+vlines!(ax, 1.346, color=:purple, linestyle="--")
+vlines!(ax, 24.74, color=:purple, linestyle="--")
+xlims!(ρs[1], ρs[end])
+ax = Axis(fig[i, 2], ylabel="Im(λ_$(i))", xlabel="ρ")
+lines!(ax, ρs, imag.(all_λs[:,i]))
+vlines!(ax, 1.346, color=:purple, linestyle="--")
+vlines!(ax, 24.74, color=:purple, linestyle="--")
+xlims!(ρs[1], ρs[end])
+end
+save("lorenz-eigenvalues-twootherfixedpoints-near-r_1.png", fig, px_per_unit=3)
+save("lorenz-eigenvalues-twootherfixedpoints-near-until-r_30-hopf.png", fig, px_per_unit=3)
 
 ## Interactive 
 using InteractiveDynamics
