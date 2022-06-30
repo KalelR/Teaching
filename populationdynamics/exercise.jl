@@ -111,7 +111,7 @@ ax3.xticks=0:25:Tplot
 xlims!(0, Tplot)
 
 ax4 = Axis(fig[2, 1], ylabel="Rj", xlabel="t")
-for i=1:k lines!(ax4, t, u[n+i, :]) end 
+for i=1:k lines!(ax4, t, u[n+i, :], color=["black", "red", "green", "cyan", "purple"][i]) end 
 ax4.xticks=0:25:Tplot
 xlims!(0, Tplot)
 save("populationdynamics-allinfo-n_$(n)-k_$(k).png", fig, px_per_unit=3)
