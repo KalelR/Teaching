@@ -1,14 +1,14 @@
 using OrdinaryDiffEq
 
 monod_equation(r, R, Ks) = r*R/(Ks+R)
-μ(i, R, r, K) = minimum( monod_equation.(r, R, K[:, i]) ) 
+μ(R, r, K) = minimum( monod_equation.(r, R, K) ) 
 
 #K, C: k x n (resources x species)
 function resource_consumption(j, C, R, r, K, N) 
     sum = 0.0 
     n = length(N)
     for i=1:n
-        sum += C[j,i] * μ(i, R, r, K) * N[i]
+        sum += C[j,i] * μ(R, r[i], K[:,i]) * N[i]
     end 
     return sum 
 end
@@ -19,7 +19,7 @@ end
     N = u[1:n]
     R = u[n+1:n+k]
     for i=1:n 
-        du[i] = N[i]*(μ(i, R, r, K) - m[i])
+        du[i] = N[i]*(μ(R, r[i], K[:,i]) - m[i])
     end
 
     for j=1:k
@@ -116,7 +116,7 @@ ax4.xticks=0:25:Tplot
 xlims!(0, Tplot)
 save("populationdynamics-allinfo-n_$(n)-k_$(k).png", fig, px_per_unit=3)
 
-
+#=
 #Lyapunovs 
 using DynamicalSystems
 ds = ContinuousDynamicalSystem(prob)
@@ -151,6 +151,7 @@ end
 
 save("bifurcationdiagram-full-n_$(n)-k_$(k).png", fig, px_per_unit=3)
 
+=#
 
 
 
@@ -160,9 +161,9 @@ save("bifurcationdiagram-full-n_$(n)-k_$(k).png", fig, px_per_unit=3)
 
 
 ### test 
-lines(t, u[1,:])
-using Peaks
-pks, vals = findmaxima(u[1,:])
-scatter!(t[pks], vals, color=:red)
-pks, vals = findminima(u[1,:])
-scatter!(t[pks], vals, color=:green)
+# lines(t, u[1,:])
+# using Peaks
+# pks, vals = findmaxima(u[1,:])
+# scatter!(t[pks], vals, color=:red)
+# pks, vals = findminima(u[1,:])
+# scatter!(t[pks], vals, color=:green)
